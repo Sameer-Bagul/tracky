@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Tracky Printables 🖨️✨
 
-## Getting Started
+**A precision-engineered, printer-ready consistency tracker.**
 
-First, run the development server:
+Tracky is a beautifully designed, minimalist goal-tracking web application built with Next.js. It focuses on a premium tactile aesthetic, allowing you to build highly customizable A4-optimized habit trackers that look gorgeous on your screen and print perfectly for DIY wall decor.
+
+## ✨ Features
+
+*   **A4-Printable Architecture:** The UI is mathematically locked to an A4-landscape aspect ratio (`aspect-[297/210]`). What you see on the screen is exactly what comes out of your printer.
+*   **Interactive Physics Background:** A high-performance, Device-Pixel-Ratio (DPR) aware HTML `<canvas>` background features liquid-like repulsion physics and magnetic proximity darkening that reacts to your mouse (automatically hidden when printing).
+*   **Theming & Customization Engine:**
+    *   **Custom Colors:** A built-in color-picker dynamically computes perfect opacities for text, borders, and UI accents based on a single hex code.
+    *   **Local Image Uploads:** Upload your own wallpapers. Images are automatically compressed via a local canvas pipeline to prevent browser storage limits.
+    *   **Editable Metadata:** Click directly on the tracker title or motivational quote to edit them in real-time.
+*   **100% Privacy-First:** Zero databases, zero accounts. Every single interaction, setting, and checked day is saved instantly and exclusively to your browser's local storage.
+
+## 🛠️ Tech Stack
+
+*   **Framework:** [Next.js 16](https://nextjs.org/) (App Router)
+*   **Language:** TypeScript
+*   **Styling:** Tailwind CSS v4 (Inline `@theme`)
+*   **Typography:** Google Poppins font
+*   **Icons:** Lucide React & Custom SVGs
+*   **Graphics:** Native HTML5 Canvas API
+
+## 🚀 Getting Started
+
+First, install the dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the application in action.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🖨️ Printing Guide
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+To get the perfect printout for your wall:
+1. Setup your Tracker (Start date, Title, Quote).
+2. Click the **Print Tracker** button on the UI.
+3. In your browser's print dialog, ensure:
+   *   **Layout:** Landscape
+   *   **Paper Size:** A4
+   *   **Margins:** None / Minimum
+   *   **Background Graphics:** Enabled (if you want the background image) or Disabled (for a pure ink-saving minimalist look).
 
-## Learn More
+## 🤝 Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Sameer-Bagul/tracky/issues).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Small daily improvements lead to stunning results.*
