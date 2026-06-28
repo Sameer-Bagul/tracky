@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>365 Day Success Tracker</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+  :root {
+    --green: #1a9e6b;
+    --green-light: #e6f7f1;
+    --green-mid: #5cc4a0;
+    --green-dark: #0d6e4b;
+    --red: #d62828;
+    --red-light: #fdeaea;
+    --gray-50: #f8f8f6;
+    --gray-100: #efefec;
+    --gray-200: #ddddd8;
+    --gray-400: #9a9a94;
+    --gray-600: #5a5a55;
+    --gray-900: #1a1a18;
+    --ink: #111110;
+    --white: #ffffff;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--gray-50);
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ─── SETUP PANEL ─── */
+  .app-header {
+    background: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .app-logo {
+    width: 36px; height: 36px;
+    background: var(--green);
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .app-logo svg { width: 20px; height: 20px; fill: none; stroke: #fff; stroke-width: 2.2; stroke-linecap: round; }
+  .app-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--ink); }
+  .app-sub { font-size: 12px; color: var(--gray-400); margin-top: 1px; }
+
+  .setup-wrap {
+    max-width: 860px;
+    margin: 32px auto;
+    padding: 0 24px;
+  }
+
+  .setup-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    box-shadow: var(--shadow-sm);
+  }
+  .setup-card h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 20px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  @media(max-width:600px){ .form-grid{ grid-template-columns:1fr; } }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 500; color: var(--gray-600); letter-spacing: 0.04em; }
+  .field input[type=date],
+  .field input[type=text] {
+    height: 40px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 0 12px;
+    font-size: 14px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    background: var(--white);
+    transition: border-color 0.15s;
+  }
+  .field input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 3px rgba(26,158,107,0.12); }
+  .field-full { grid-column: 1 / -1; }
+
+  .btn-generate {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 42px;
+    padding: 0 24px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    font-family: 'Inter', sans-serif;
+    margin-top: 4px;
+  }
+  .btn-generate:hover { background: var(--green-dark); }
+  .btn-generate:active { transform: scale(0.98); }
+
+  .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 18px;
+    background: transparent;
+    color: var(--gray-600);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-secondary:hover { border-color: var(--gray-400); color: var(--ink); background: var(--gray-50); }
+
+  .btn-print {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 38px;
+    padding: 0 18px;
+    background: var(--ink);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    font-family: 'Inter', sans-serif;
+  }
+  .btn-print:hover { opacity: 0.8; }
+
+  .action-bar {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin: 20px 0 8px;
+  }
+  .stat-chips {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .chip {
+    background: var(--green-light);
+    color: var(--green-dark);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .chip.warn { background: var(--red-light); color: var(--red); }
+  .chip.neutral { background: var(--gray-100); color: var(--gray-600); }
+
+  /* ─── TRACKER OUTPUT ─── */
+  #output { display: none; }
+
+  .tracker-outer {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px 48px;
+  }
+
+  /* SHEET */
+  .sheet {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    padding: 32px 28px 28px;
+    box-shadow: var(--shadow-md);
+    margin-bottom: 28px;
+    page-break-after: always;
+  }
+  .sheet:last-child { margin-bottom: 0; page-break-after: auto; }
+
+  .sheet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 22px;
+    padding-bottom: 18px;
+    border-bottom: 2px solid var(--gray-100);
+  }
+  .sheet-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .sheet-badge {
+    background: var(--green);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+  }
+  .sheet-meta {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .sheet-meta span {
+    font-size: 12px;
+    color: var(--gray-400);
+  }
+  .sheet-meta strong { color: var(--ink); }
+
+  .goal-bar {
+    background: var(--gray-50);
+    border: 1px dashed var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 10px 16px;
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 22px;
+  }
+  .goal-bar strong { color: var(--ink); font-weight: 600; }
+
+  /* ─── 12-MONTH GRID ─── */
+  .months-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 10px;
+  }
+
+  .month-col {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .month-header {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray-600);
+    text-align: center;
+    padding: 4px 2px 6px;
+    border-bottom: 1.5px solid var(--gray-100);
+    margin-bottom: 2px;
+  }
+
+  .day-dot {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1.5px solid var(--gray-200);
+    background: var(--white);
+    cursor: default;
+    transition: background 0.12s, border-color 0.12s, transform 0.08s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0;
+  }
+
+  /* States */
+  .day-dot.inactive {
+    background: var(--gray-50);
+    border-color: var(--gray-100);
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .day-dot.active {
+    border-color: var(--green-mid);
+    cursor: pointer;
+  }
+  .day-dot.active:hover {
+    border-color: var(--green);
+    background: var(--green-light);
+    transform: scale(1.12);
+  }
+  .day-dot.filled {
+    background: var(--green);
+    border-color: var(--green-dark);
+    cursor: pointer;
+  }
+  .day-dot.filled:hover { background: var(--green-dark); transform: scale(1.1); }
+  .day-dot.today {
+    border-color: var(--red) !important;
+    border-width: 2px;
+    box-shadow: 0 0 0 2px rgba(214,40,40,0.15);
+  }
+  .day-dot.today.filled { background: var(--red); border-color: var(--red); }
+
+  /* Date number tooltip on hover */
+  .day-dot[data-label]:hover::after {
+    content: attr(data-label);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 500;
+    padding: 2px 5px;
+    border-radius: 3px;
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 10;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Filler dots (make all months same height) */
+  .day-dot.filler {
+    visibility: hidden;
+    pointer-events: none;
+  }
+
+  /* ─── LEGEND ─── */
+  .sheet-footer {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid var(--gray-100);
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .leg {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--gray-600);
+  }
+  .leg-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .leg-dot.l-done { background: var(--green); }
+  .leg-dot.l-today { background: transparent; border: 2px solid var(--red); }
+  .leg-dot.l-active { background: transparent; border: 1.5px solid var(--green-mid); }
+  .leg-dot.l-inactive { background: var(--gray-50); border: 1.5px solid var(--gray-100); opacity: 0.5; }
+
+  .progress-bar-wrap { margin-top: 10px; }
+  .prog-label { font-size: 11px; color: var(--gray-400); margin-bottom: 4px; }
+  .prog-track {
+    height: 5px;
+    background: var(--gray-100);
+    border-radius: 10px;
+    overflow: hidden;
+    width: 180px;
+  }
+  .prog-fill {
+    height: 100%;
+    background: var(--green);
+    border-radius: 10px;
+    transition: width 0.3s;
+  }
+
+  .notes-block {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--gray-200);
+  }
+  .notes-label { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 8px; }
+  .notes-line { height: 1px; background: var(--gray-100); margin-bottom: 10px; }
+
+  /* ─── PRINT STYLES ─── */
+  @media print {
+    body { background: #fff; }
+    .app-header, .setup-wrap, .action-bar, .stat-chips, .no-print { display: none !important; }
+    #output { display: block !important; }
+    .tracker-outer { padding: 0; max-width: 100%; }
+    .sheet {
+      border: none;
+      box-shadow: none;
+      border-radius: 0;
+      padding: 16px;
+      page-break-after: always;
+      margin-bottom: 0;
+    }
+    .day-dot[data-label]:hover::after { display: none; }
+    .months-grid { gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<header class="app-header">
+  <div class="app-logo">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 5-5"/></svg>
+  </div>
+  <div>
+    <div class="app-title">365 Day Success Tracker</div>
+    <div class="app-sub">Set your goal. Mark every day. Print &amp; stick on your wall.</div>
+  </div>
+</header>
+
+<!-- SETUP PANEL -->
+<div class="setup-wrap no-print">
+  <div class="setup-card">
+    <h2>Configure your tracker</h2>
+    <div class="form-grid">
+      <div class="field">
+        <label>Start date</label>
+        <input type="date" id="inp-start"/>
+      </div>
+      <div class="field">
+        <label>Goal / end date <span style="color:#9a9a94;font-weight:400">(optional)</span></label>
+        <input type="date" id="inp-end"/>
+      </div>
+      <div class="field">
+        <label>&nbsp;</label>
+        <button class="btn-generate" onclick="generate()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Generate tracker
+        </button>
+      </div>
+      <div class="field field-full">
+        <label>Your goal / habit</label>
+        <input type="text" id="inp-goal" placeholder="e.g. Study every day for GATE exam on 17 December 2025"/>
+      </div>
+    </div>
+  </div>
+
+  <div id="action-section" style="display:none">
+    <div class="action-bar">
+      <button class="btn-print" onclick="window.print()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2M6 14h12v8H6z"/></svg>
+        Print / Save PDF
+      </button>
+      <button class="btn-secondary" onclick="resetAll()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 12a9 9 0 109-9 9 9 0 00-7.7 4.4L3 3v5h5"/></svg>
+        Reset
+      </button>
+      <span style="font-size:12px;color:#9a9a94;margin-left:4px">Click dots to mark completed days</span>
+    </div>
+    <div class="stat-chips" id="stat-chips"></div>
+  </div>
+</div>
+
+<!-- TRACKER OUTPUT -->
+<div id="output">
+  <div class="tracker-outer" id="tracker-container"></div>
+</div>
+
+<script>
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const SHORT_M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+let state = { checked: {}, startDate: null, endDate: null, totalDays: 0 };
+
+function pad(n){ return String(n).padStart(2,'0'); }
+function fmt(d){ return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; }
+function fmtDisplay(d){ return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}); }
+function daysInMonth(y,m){ return new Date(y,m+1,0).getDate(); }
+
+// Init default date
+(function(){
+  const t = new Date();
+  document.getElementById('inp-start').value = fmt(t);
+})();
+
+function generate(){
+  const sv = document.getElementById('inp-start').value;
+  const ev = document.getElementById('inp-end').value;
+  const goal = document.getElementById('inp-goal').value.trim();
+
+  if(!sv){ alert('Please set a start date.'); return; }
+
+  const startDate = new Date(sv + 'T00:00:00');
+  let endDate = null;
+
+  if(ev){
+    endDate = new Date(ev + 'T00:00:00');
+    if(endDate <= startDate){ alert('Goal date must be after the start date.'); return; }
+  }
+
+  state.startDate = startDate;
+  state.endDate = endDate;
+  state.goal = goal;
+  state.checked = {};
+
+  // Determine years to render
+  const startYear = startDate.getFullYear();
+  const endYear = endDate ? endDate.getFullYear() : startDate.getFullYear() + (startDate.getMonth() > 0 ? 1 : 0);
+
+  const years = [];
+  for(let y = startYear; y <= endYear; y++) years.push(y);
+
+  const container = document.getElementById('tracker-container');
+  container.innerHTML = '';
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  years.forEach((year, yi) => {
+    const sheet = buildSheet(year, yi, years.length, today);
+    container.appendChild(sheet);
+  });
+
+  document.getElementById('output').style.display = 'block';
+  document.getElementById('action-section').style.display = 'block';
+  updateStats();
+  document.getElementById('output').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function buildSheet(year, sheetIndex, totalSheets, today){
+  const wrap = document.createElement('div');
+  wrap.className = 'sheet';
+  wrap.dataset.year = year;
+
+  const s = state.startDate;
+  const e = state.endDate;
+
+  // Header
+  const startLabel = fmtDisplay(s);
+  const endLabel = e ? fmtDisplay(e) : '—';
+  const sheetLabel = totalSheets > 1 ? `Year ${sheetIndex+1} of ${totalSheets}` : 'Full year';
+
+  wrap.innerHTML = `
+    <div class="sheet-header">
+      <div>
+        <div class="sheet-title">${year} — Success Tracker</div>
+        <div class="sheet-meta">
+          <span>Start: <strong>${startLabel}</strong></span>
+          ${e ? `<span>Goal date: <strong>${endLabel}</strong></span>` : ''}
+        </div>
+      </div>
+      <span class="sheet-badge">${sheetLabel}</span>
+    </div>
+    ${state.goal ? `<div class="goal-bar">Goal: <strong>${state.goal}</strong></div>` : ''}
+    <div class="months-grid" id="grid-${year}"></div>
+    <div class="sheet-footer">
+      <div class="legend">
+        <div class="leg"><div class="leg-dot l-done"></div>Completed</div>
+        <div class="leg"><div class="leg-dot l-today"></div>Today</div>
+        <div class="leg"><div class="leg-dot l-active"></div>Upcoming</div>
+        <div class="leg"><div class="leg-dot l-inactive"></div>Out of range</div>
+      </div>
+      <div class="progress-bar-wrap" id="prog-wrap-${year}">
+        <div class="prog-label" id="prog-label-${year}">0 days completed</div>
+        <div class="prog-track"><div class="prog-fill" id="prog-${year}" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div class="notes-block">
+      <div class="notes-label">Notes</div>
+      <div class="notes-line"></div>
+      <div class="notes-line"></div>
+      <div class="notes-line" style="margin-bottom:0"></div>
+    </div>
+  `;
+
+  const grid = wrap.querySelector(`#grid-${year}`);
+  const todayStr = fmt(today);
+
+  // Find max days in any month to normalize height
+  const maxDays = 31;
+
+  for(let m = 0; m < 12; m++){
+    const col = document.createElement('div');
+    col.className = 'month-col';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'month-header';
+    hdr.textContent = SHORT_M[m];
+    col.appendChild(hdr);
+
+    const days = daysInMonth(year, m);
+
+    for(let d = 1; d <= maxDays; d++){
+      const dot = document.createElement('div');
+      dot.className = 'day-dot';
+
+      if(d > days){
+        dot.classList.add('filler');
+        col.appendChild(dot);
+        continue;
+      }
+
+      const dateObj = new Date(year, m, d);
+      const dateStr = fmt(dateObj);
+      const label = `${d} ${SHORT_M[m]}`;
+      dot.dataset.date = dateStr;
+      dot.dataset.label = label;
+
+      // Range check
+      const inRange = isInRange(dateObj);
+
+      if(!inRange){
+        dot.classList.add('inactive');
+      } else {
+        dot.classList.add('active');
+        if(state.checked[dateStr]) dot.classList.add('filled');
+        if(dateStr === todayStr) dot.classList.add('today');
+        dot.addEventListener('click', function(){
+          if(this.classList.contains('inactive')) return;
+          if(state.checked[dateStr]){
+            delete state.checked[dateStr];
+            this.classList.remove('filled');
+          } else {
+            state.checked[dateStr] = true;
+            this.classList.add('filled');
+          }
+          updateStats();
+          updateProgress();
+        });
+      }
+      col.appendChild(dot);
+    }
+    grid.appendChild(col);
+  }
+  return wrap;
+}
+
+function isInRange(dateObj){
+  const s = state.startDate;
+  const e = state.endDate;
+  dateObj.setHours(0,0,0,0);
+  if(s) s.setHours(0,0,0,0);
+  if(e) e.setHours(0,0,0,0);
+
+  if(s && dateObj < s) return false;
+  if(e && dateObj > e) return false;
+  if(!e){
+    // No goal date → next 365 days from start
+    const limit = new Date(s);
+    limit.setDate(s.getDate() + 364);
+    if(dateObj > limit) return false;
+  }
+  return true;
+}
+
+function countRangeDays(){
+  const s = state.startDate;
+  const e = state.endDate;
+  if(e){
+    return Math.round((e - s)/(1000*60*60*24)) + 1;
+  }
+  return 365;
+}
+
+function updateProgress(){
+  const years = document.querySelectorAll('.sheet');
+  const totalChecked = Object.keys(state.checked).length;
+  const total = countRangeDays();
+
+  years.forEach(sheet => {
+    const year = parseInt(sheet.dataset.year);
+    // count checked in this year
+    let yChecked = 0, yTotal = 0;
+    for(let m = 0; m < 12; m++){
+      const days = daysInMonth(year, m);
+      for(let d = 1; d <= days; d++){
+        const dateObj = new Date(year, m, d);
+        if(isInRange(dateObj)){
+          yTotal++;
+          if(state.checked[fmt(dateObj)]) yChecked++;
+        }
+      }
+    }
+    const pct = yTotal > 0 ? Math.round((yChecked/yTotal)*100) : 0;
+    const progEl = document.getElementById(`prog-${year}`);
+    const labelEl = document.getElementById(`prog-label-${year}`);
+    if(progEl) progEl.style.width = pct + '%';
+    if(labelEl) labelEl.textContent = `${yChecked} of ${yTotal} days · ${pct}%`;
+  });
+}
+
+function updateStats(){
+  const total = countRangeDays();
+  const checked = Object.keys(state.checked).length;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const s = new Date(state.startDate); s.setHours(0,0,0,0);
+  const elapsed = Math.max(0, Math.round((today - s)/(1000*60*60*24))) + 1;
+  const remaining = Math.max(0, total - Math.min(elapsed, total));
+  const pct = Math.round((checked/total)*100);
+
+  const chips = document.getElementById('stat-chips');
+  chips.innerHTML = `
+    <span class="chip">${checked} days completed</span>
+    <span class="chip neutral">${remaining} days remaining</span>
+    <span class="chip neutral">${total} total days</span>
+    ${checked > 0 ? `<span class="chip">${pct}% done</span>` : ''}
+  `;
+  updateProgress();
+}
+
+function resetAll(){
+  if(!confirm('Reset all progress and clear the tracker?')) return;
+  state.checked = {};
+  document.getElementById('output').style.display = 'none';
+  document.getElementById('action-section').style.display = 'none';
+  document.getElementById('tracker-container').innerHTML = '';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+</script>
+</body>
+</html>
