@@ -212,7 +212,7 @@ export default function Tracker() {
         if (!element) continue;
         
         const canvas = await html2canvas(element, {
-          scale: 4, // 4x resolution for High-Definition 300+ DPI printing
+          scale: 2, // 2x resolution is optimal. 4x can crash older browsers due to canvas memory limits
           useCORS: true,
           backgroundColor: '#ffffff'
         });
