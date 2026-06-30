@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Plus, Printer, RotateCcw, Settings, X, Upload, Download, LayoutTemplate } from "lucide-react";
+import { Plus, Printer, RotateCcw, Settings, X, Upload, Download, LayoutTemplate, HelpCircle } from "lucide-react";
 import { format, getDaysInMonth } from "date-fns";
 import html2canvas from "html2canvas";
+import { driver } from "driver.js";
+import "driver.js/dist/driver.css";
 import { GithubIcon } from "./components/GithubIcon";
 import { InteractiveBackground } from "./components/InteractiveBackground";
 
@@ -28,6 +30,7 @@ export default function Tracker() {
   const [cellTextColor, setCellTextColor] = useState<string>("#ffffff");
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const today = new Date();
@@ -69,7 +72,45 @@ export default function Tracker() {
         }
       } catch (e) {}
     }
+    
+    setIsMounted(true);
   }, []);
+
+  // Driver.js Onboarding Tour
+  useEffect(() => {
+    if (!isMounted) return;
+
+    if (!isGenerated) {
+      const seenSetup = localStorage.getItem("tracky_tour_setup");
+      if (!seenSetup) {
+        const d = driver({
+          showProgress: true,
+          steps: [
+            { element: '#setup-start-date', popover: { title: '1. Timeframe', description: 'Pick when you want your habit tracking to begin.', side: "top" } },
+            { element: '#setup-goal', popover: { title: '2. Your Mission', description: 'What habit are you building? Keep it simple.', side: "top" } },
+            { element: '#setup-generate', popover: { title: '3. Generate', description: 'Click here to mathematically construct your printable canvas!', side: "top" } }
+          ]
+        });
+        setTimeout(() => d.drive(), 500);
+        localStorage.setItem("tracky_tour_setup", "true");
+      }
+    } else {
+      const seenCanvas = localStorage.getItem("tracky_tour_canvas");
+      if (!seenCanvas) {
+        const d = driver({
+          showProgress: true,
+          steps: [
+            { element: '#tracker-title-edit', popover: { title: 'Editable Metadata', description: 'Click directly on the text to personalize your tracker in real-time.', side: "bottom" } },
+            { element: '#tracker-grid', popover: { title: 'The Grid', description: 'Click any day to mark it as complete. The UI automatically handles the math.', side: "top" } },
+            { element: '#layout-settings-btn', popover: { title: 'Customization Engine', description: 'Change grid shapes, add background wallpapers, and fine-tune your colors.', side: "bottom" } },
+            { element: '#export-hd-btn', popover: { title: 'Export & Print', description: 'Ready for the wall? Export a high-resolution image designed strictly for perfect printer alignment.', side: "bottom" } }
+          ]
+        });
+        setTimeout(() => d.drive(), 500);
+        localStorage.setItem("tracky_tour_canvas", "true");
+      }
+    }
+  }, [isGenerated, isMounted]);
 
   const saveState = (newState: any) => {
     localStorage.setItem("tracky_state", JSON.stringify(newState));
@@ -298,7 +339,7 @@ export default function Tracker() {
 
         {/* Content */}
         <div className="relative z-10 text-[var(--t-base)]">
-          <div className="flex flex-col md:flex-row justify-between items-start mb-10 pb-6 border-b border-[var(--t-border)] print:border-[var(--t-border)] gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-start mb-10 pb-6 border-b border-[var(--t-border)] print:border-[var(--t-border)] gap-6" id="tracker-title-edit">
             <div className="flex-1 w-full">
               <div className="flex items-center gap-3 mb-2">
                 <input 
@@ -338,7 +379,7 @@ export default function Tracker() {
           )}
 
           {/* HORIZONTAL LAYOUT (Rows = Months, Cols = Days) */}
-          <div className="flex flex-col gap-1.5 md:gap-2">
+          <div className="flex flex-col gap-1.5 md:gap-2" id="tracker-grid">
             <div className="flex gap-1.5 md:gap-2 ml-[45px] md:ml-[55px]">
               {Array.from({ length: maxDays }).map((_, d) => (
                 <div key={`num-col-${d}`} className="flex-1 aspect-square flex items-center justify-center text-[9px] md:text-[11px] font-bold text-[var(--t-muted)]">
@@ -616,16 +657,30 @@ export default function Tracker() {
             </div>
           </div>
           
-          <a 
-            href="https://github.com/Sameer-Bagul/tracky" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-black transition-colors"
-            title="Star on GitHub"
-          >
-            <GithubIcon className="w-5 h-5" />
-            <span className="hidden sm:inline">Star on GitHub</span>
-          </a>
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={() => {
+                localStorage.removeItem("tracky_tour_setup");
+                localStorage.removeItem("tracky_tour_canvas");
+                window.location.reload();
+              }}
+              className="flex items-center gap-1.5 text-sm font-bold text-gray-500 hover:text-black transition-colors"
+              title="Restart Tutorial"
+            >
+              <HelpCircle className="w-4 h-4" />
+              <span className="hidden sm:inline">Tour</span>
+            </button>
+            <a 
+              href="https://github.com/Sameer-Bagul/tracky" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm font-bold text-gray-600 hover:text-black transition-colors"
+              title="Star on GitHub"
+            >
+              <GithubIcon className="w-5 h-5" />
+              <span className="hidden sm:inline">Star on GitHub</span>
+            </a>
+          </div>
         </header>
 
         {/* Setup Panel */}
@@ -645,7 +700,7 @@ export default function Tracker() {
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-                <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3" id="setup-start-date">
                   <label className="text-xs font-bold tracking-widest uppercase text-gray-500 ml-1">Start Date</label>
                   <input 
                     type="date" 
@@ -663,7 +718,7 @@ export default function Tracker() {
                     className="h-14 bg-gray-50 border border-gray-200 rounded-xl px-5 text-black font-bold focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent transition-all shadow-sm w-full"
                   />
                 </div>
-                <div className="md:col-span-2 flex flex-col gap-3">
+                <div className="md:col-span-2 flex flex-col gap-3" id="setup-goal">
                   <label className="text-xs font-bold tracking-widest uppercase text-gray-500 ml-1">Theme / Mission</label>
                   <input 
                     type="text" 
@@ -676,6 +731,7 @@ export default function Tracker() {
               </div>
 
               <button 
+                id="setup-generate"
                 onClick={handleGenerate}
                 className="h-16 w-full bg-black hover:bg-gray-900 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-black/20 hover:shadow-black/30 hover:-translate-y-0.5 active:translate-y-0 text-lg"
               >
@@ -693,6 +749,7 @@ export default function Tracker() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 print:hidden px-4 md:px-0">
               <div className="flex flex-wrap items-center gap-3">
                 <button 
+                  id="export-hd-btn"
                   onClick={handleExport} 
                   disabled={isExporting}
                   className="flex items-center gap-2 bg-black text-white hover:bg-gray-900 px-6 py-3 rounded-lg text-sm font-bold transition-all shadow-md hover:shadow-lg disabled:opacity-70 disabled:hover:translate-y-0 hover:-translate-y-0.5"
@@ -701,6 +758,7 @@ export default function Tracker() {
                   {isExporting ? "Rendering HD Image..." : "Export HD Image"}
                 </button>
                 <button 
+                  id="layout-settings-btn"
                   onClick={() => setIsSettingsOpen(true)}
                   className="flex items-center gap-2 bg-white hover:bg-gray-50 border border-gray-200 px-6 py-3 rounded-lg text-sm font-bold text-gray-700 transition-all shadow-sm hover:shadow-md"
                 >
