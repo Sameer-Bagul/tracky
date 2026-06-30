@@ -770,10 +770,7 @@ export default function Tracker() {
                   Start Over
                 </button>
               </div>
-              <div className="text-xs font-medium text-gray-400 flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                Live Tracker Active
-              </div>
+
             </div>
             
             {renderStats()}
